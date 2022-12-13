@@ -15,11 +15,15 @@ def search(request):
     if stxt.isspace() == False and len(stxt)!=0:
         input = SearchText(Searchtext=stxt)
         input.save()
-    return render(request,'main.html')
+    inputval = {
+        'input':input
+    }
+    return render(request,'main.html',inputval)
 
 def videos(request):
     # if request.method =='POST':
             stxt = SearchText.objects.all().last()
+            stxt=str(stxt)
         # stxt=request.POST['q']
             video = VideosSearch(str(stxt),limit=10)
             result_list=[]
@@ -41,7 +45,8 @@ def videos(request):
                 result_dict
                 result_list.append(result_dict)
                 context={
-                    'results':result_list
+                    'results':result_list,
+                    'input':stxt,
                 }
             return render(request,'main.html',context)
         # else:
@@ -85,6 +90,7 @@ def images(request):
             location.append(myurl+i+'')
         mydict={
             'size':size,
+            'input':searchkey,
             'locate':location   
         }
     return render(request,'main.html',mydict)
