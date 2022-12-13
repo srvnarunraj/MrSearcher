@@ -13,13 +13,13 @@ def startup(request):
 def search(request):
     stxt=request.POST['q']
     if stxt.isspace() == False and len(stxt)!=0:
-        input = SearchText(SearchText=stxt)
+        input = SearchText(Searchtext=stxt)
         input.save()
     return render(request,'main.html')
 
 def videos(request):
     # if request.method =='POST':
-            stxt = SearchText.objects.latest('SearchText')
+            stxt = SearchText.objects.all().last()
         # stxt=request.POST['q']
             video = VideosSearch(str(stxt),limit=10)
             result_list=[]
@@ -50,7 +50,7 @@ def videos(request):
     #     return redirect('/')
 
 def images(request):
-    searchkey = SearchText.objects.latest('SearchText')
+    searchkey =  SearchText.objects.all().last()
     searchkey = str(searchkey)
     mypath= "E:\\chromedriver.exe"
     myoptions = webdriver.ChromeOptions()
