@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,5 +13,9 @@
     {% if 'videos' in request.path %}
         {% include 'videos.html' %}
     {% endif %}
+    {% if 'images' in request.path %}
+        {% include 'images.html' %}
+    {% endif %}
+    
 </body>
 </html>
