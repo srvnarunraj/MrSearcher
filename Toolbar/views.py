@@ -69,7 +69,7 @@ def images(request):
     box.send_keys(Keys.ENTER)
     try:
         n=mykey
-        pd='E:/Python Search Engine/MrSearch/static/images/'
+        pd='E:/Search Engine/MrSearcher/static/images/'
         path = os.path.join(pd,n)
         os.mkdir(path)
     except:
@@ -80,7 +80,7 @@ def images(request):
         except:
             pass
         searchtxt=searchkey
-        x = 'E:\Python Search Engine\MrSearch\static\images\\'
+        x = 'E:\Search Engine\MrSearcher\static\images\\'
             # searchtxt='Robot'
         url=x+searchtxt
         size = os.listdir(url)
