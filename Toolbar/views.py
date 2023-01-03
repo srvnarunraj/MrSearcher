@@ -6,7 +6,7 @@ from Toolbar.models import SearchText
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
-
+import requests
 def startup(request):
     return render(request,'index.html')
 
@@ -94,4 +94,30 @@ def images(request):
             'locate':location   
         }
     return render(request,'main.html',mydict)
-        
+
+def books(request):
+    # if request.method=='POST':
+        stxt = SearchText.objects.all().last()
+        searchtxt=str(stxt)
+        url = 'https://www.googleapis.com/books/v1/volumes?q='+searchtxt
+        r = requests.get(url)
+        result = r.json()
+        result_list = []
+        try:
+            for i in range(10):
+                result_dict={
+                'title':result['items'][i]['volumeInfo']['title'],
+                'subtitle':result['items'][i]['volumeInfo'].get('subtitle'),
+                'description':result['items'][i]['volumeInfo'].get('description')[:200],
+                'count':result['items'][i]['volumeInfo'].get('pageCount'),
+                'thumbnail':result['items'][i]['volumeInfo'].get('imageLinks').get('thumbnail'),
+                'preview':result['items'][i]['volumeInfo'].get('previewLink'),
+                }
+                result_list.append(result_dict)
+        except:
+            context={
+                'results':result_list,
+                'input':searchtxt,
+            }
+        return render(request,'main.html',context)
+

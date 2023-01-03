@@ -5,5 +5,5 @@ urlpatterns = [
     path('search',views.search),
     path('videos',views.videos),
     path('images',views.images),
-        
+    path('books',views.books),
 ]

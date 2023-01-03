@@ -6,16 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     {% include 'header.html' %}
-
+        
     {% if 'videos' in request.path %}
         {% include 'videos.html' %}
     {% endif %}
+
     {% if 'images' in request.path %}
         {% include 'images.html' %}
     {% endif %}
     
+    {% if 'books' in request.path %}
+        {% include 'books.html' %}
+    {% endif %}
 </body>
 </html>
