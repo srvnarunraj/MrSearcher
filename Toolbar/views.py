@@ -1,12 +1,10 @@
-import os
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from youtubesearchpython import VideosSearch
 from Toolbar.models import SearchText 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
 import requests
+from bs4 import BeautifulSoup
+import urllib.parse
 def startup(request):
     return render(request,'index.html')
 
@@ -49,75 +47,44 @@ def videos(request):
                     'input':stxt,
                 }
             return render(request,'main.html',context)
-        # else:
-        #     return redirect('/')    
-    # else:
-    #     return redirect('/')
 
 def images(request):
     searchkey =  SearchText.objects.all().last()
     searchkey = str(searchkey)
-    mypath= "E:\\chromedriver.exe"
-    myoptions = webdriver.ChromeOptions()
-    myoptions.add_experimental_option('detach',True)
-    s= Service(mypath)
-    driver = webdriver.Chrome(options=myoptions,service=s)
-    driver.get('https://images.google.com/')
-    box=driver.find_element("xpath",'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input')
-    mykey=str(searchkey)
-    box.send_keys(mykey)
-    box.send_keys(Keys.ENTER)
-    try:
-        n=mykey
-        pd='E:/Search Engine/MrSearcher/static/images/'
-        path = os.path.join(pd,n)
-        os.mkdir(path)
-    except:
-        pass
-    for i in range(1,21):
-        try:
-            img = driver.find_element('xpath','//*[@id="islrg"]/div[1]/div['+str(i)+']/a[1]/div[1]/img').screenshot(path+'\img'+str(i)+'.png')
-        except:
-            pass
-        searchtxt=searchkey
-        x = 'E:\Search Engine\MrSearcher\static\images\\'
-            # searchtxt='Robot'
-        url=x+searchtxt
-        size = os.listdir(url)
-        location=[]
-        myurl='images//'+searchtxt+'//'
-        for i in size:
-            location.append(myurl+i+'')
-        mydict={
-            'size':size,
-            'input':searchkey,
-            'locate':location   
-        }
+    query = urllib.parse.quote_plus(searchkey)
+    url = f"https://www.google.com/search?q={query}&tbm=isch"
+    response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'html.parser')
+    image_elements = soup.find_all('img')
+    image_urls = [img['src'] for img in image_elements]
+    mydict={
+        'input':searchkey,
+        'images':image_urls[1:]   
+    }
+    print(mydict['images'])
     return render(request,'main.html',mydict)
 
 def books(request):
     # if request.method=='POST':
-        stxt = SearchText.objects.all().last()
-        searchtxt=str(stxt)
-        url = 'https://www.googleapis.com/books/v1/volumes?q='+searchtxt
-        r = requests.get(url)
-        result = r.json()
-        result_list = []
-        try:
-            for i in range(10):
-                result_dict={
-                'title':result['items'][i]['volumeInfo']['title'],
-                'subtitle':result['items'][i]['volumeInfo'].get('subtitle'),
-                'description':result['items'][i]['volumeInfo'].get('description')[:200],
-                'count':result['items'][i]['volumeInfo'].get('pageCount'),
-                'thumbnail':result['items'][i]['volumeInfo'].get('imageLinks').get('thumbnail'),
-                'preview':result['items'][i]['volumeInfo'].get('previewLink'),
-                }
-                result_list.append(result_dict)
-        except:
-            context={
-                'results':result_list,
-                'input':searchtxt,
-            }
-        return render(request,'main.html',context)
-
+    stxt = SearchText.objects.all().last()
+    searchtxt = str(stxt)
+    url = 'https://www.googleapis.com/books/v1/volumes?q=' + searchtxt
+    r = requests.get(url)
+    result = r.json()
+    result_list = []
+    for i in range(10):
+        result_dict = {
+            'title': result['items'][i]['volumeInfo']['title'],
+            'subtitle': result['items'][i]['volumeInfo'].get('subtitle'),
+            'description': result['items'][i]['volumeInfo'].get('description','...')[:200],
+            'count': result['items'][i]['volumeInfo'].get('pageCount', '...'),
+            'thumbnail': result['items'][i]['volumeInfo'].get('imageLinks', {}).get('thumbnail'),
+            'preview': result['items'][i]['volumeInfo'].get('previewLink'),
+        }
+        result_list.append(result_dict)
+    context = {
+        'results': result_list,
+        'input': searchtxt,
+    }
+    return render(request, 'main.html', context)

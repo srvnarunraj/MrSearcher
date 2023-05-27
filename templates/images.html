@@ -17,10 +17,10 @@
         </div>
         <div class="container px-10 py-30 mx-auto">
             <div class="flex flex-wrap -m-4">
-                {% for i in locate %}
+                {% for i in images %}
                 <div class="xl:w-1/5 md:w-1/2 p-4">
                     <div class="bg-gray-100 p-1 rounded-lg">
-                        <img class="h-40 rounded w-full object-cover object-center mb-2" src="{% static i %}" alt="content">
+                        <img class="h-40 rounded w-full object-cover object-center mb-2" src="{{ i }}" alt="content">
                     </div>
                 </div>
                 {% endfor %}
