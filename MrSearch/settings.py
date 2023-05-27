@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure--03ucd=x#h*c(qfif)i$b5u89w6+kdzcx9h8p*2ru=pkgci_*#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 
 # Application definition
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'MrSearch.wsgi.application'
+WSGI_APPLICATION = 'MrSearch.wsgi.app'
 
 
 # Database
