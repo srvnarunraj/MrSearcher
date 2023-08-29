@@ -3,6 +3,8 @@ from Toolbar.models import SearchText
 # Register your models here.
 admin.site.register(SearchText)
 
-admin.site.site_header="Mr Searcher Portal"
-admin.site.site_title="Mr Searcher Admin Login"
-admin.site.index_title="Mr Searcher"
+admin.site.site_header="Mr Search Admin Login"
+admin.site.site_title="Admin Portal"
+admin.site.index_title="Mr Admin"
+
+
