@@ -88,3 +88,11 @@ def books(request):
         'input': searchtxt,
     }
     return render(request, 'main.html', context)
+
+def all(request):
+    searchkey =  SearchText.objects.all().last()
+    searchkey = str(searchkey)
+    mydict={
+        'input':searchkey,
+    }
+    return render(request,'main.html',mydict)

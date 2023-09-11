@@ -10,7 +10,14 @@
 </head>
 <body>
     {% include 'header.html' %}
-        
+    
+    {% if 'search' in request.path %}
+        {% include 'all.html' %}
+    {% endif %}
+    {% if 'all' in request.path %}
+        {% include 'all.html' %}
+    {% endif %}
+    
     {% if 'videos' in request.path %}
         {% include 'videos.html' %}
     {% endif %}
