@@ -4,6 +4,7 @@ from youtubesearchpython import VideosSearch
 from Toolbar.models import SearchText 
 import requests,os
 import json
+import wikipediaapi
 from bs4 import BeautifulSoup
 import urllib.parse
 def startup(request):
@@ -147,13 +148,22 @@ def all(request):
             })
 
         # Filter out results where 'imgsrc' is 'N/A'
-        filtered_results = [result for result in extracted_results if result['imgsrc'] != 'N/A']
+        filtered_results = [result for result in extracted_results]
 
+
+        ##### AI RESULTS
+        user_agent = "YourAppName/1.0 (your@email.com)"
+        custom_headers = {
+            'User-Agent': user_agent,
+        }
+        wiki_wiki = wikipediaapi.Wikipedia('en', headers=custom_headers)  # 'en' for English Wikipedia
+        page = wiki_wiki.page(searchkey)
         mydict = {
             'input': searchkey,
             'extracted_results': filtered_results,
+            'ai':page.summary
         }
 
         return render(request, 'main.html', mydict)
     finally:
-        response.close() 
+        response.close()
