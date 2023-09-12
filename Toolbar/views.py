@@ -69,7 +69,11 @@ def books(request):
     # if request.method=='POST':
     stxt = SearchText.objects.all().last()
     searchtxt = str(stxt)
-    url = 'https://www.googleapis.com/books/v1/volumes?q=' + searchtxt
+
+    api_key = os.environ.get('GOOGLE_BOOKS_API_KEY')
+    # Construct the API URL with the API key
+    url = f'https://www.googleapis.com/books/v1/volumes?q={searchtxt}&key={api_key}'
+
     r = requests.get(url)
     result = r.json()
     result_list = []
