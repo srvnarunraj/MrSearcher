@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from youtubesearchpython import VideosSearch
 from Toolbar.models import SearchText 
-import requests
+import requests,os
+import json
 from bs4 import BeautifulSoup
 import urllib.parse
 def startup(request):
@@ -16,6 +17,7 @@ def search(request):
     inputval = {
         'input':input
     }
+    return redirect(all)
     return render(request,'main.html',inputval)
 
 def videos(request):
@@ -96,7 +98,62 @@ def books(request):
 def all(request):
     searchkey =  SearchText.objects.all().last()
     searchkey = str(searchkey)
-    mydict={
-        'input':searchkey,
-    }
-    return render(request,'main.html',mydict)
+
+    API_KEY =""
+    CX=""
+    url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={searchkey}"
+
+    response = requests.get(url)
+    
+    try:
+        response.raise_for_status()  # Check for HTTP error
+        data = json.loads(response.text)
+        
+        search_results = data.get('items', [])  # Check if 'items' key exists
+        extracted_results = []
+        for search_result in search_results:
+            htmlTitle = search_result.get('htmlTitle', 'N/A')
+            link = search_result.get('link', 'N/A')
+            displayLink = search_result.get('displayLink', 'N/A')
+            htmlSnippet = search_result.get('htmlSnippet', 'N/A')
+
+            # Extract 'src' values from 'cse_thumbnail', 'cse_image', and 'og:image' lists
+            cse_thumbnail = search_result.get('pagemap', {}).get('cse_thumbnail', [])
+            thumbnail_src = cse_thumbnail[0]['src'] if cse_thumbnail else 'N/A'
+
+            cse_image = search_result.get('pagemap', {}).get('cse_image', [])
+            image_src = 'N/A'
+            for img in cse_image:
+                if 'src' in img:
+                    image_src = img['src']
+                    break
+
+            metatags = search_result.get('pagemap', {}).get('metatags', [])
+            ogimage_src = 'N/A'
+            for meta in metatags:
+                if 'og:image' in meta:
+                    ogimage_src = meta['og:image']
+                    break
+
+            # Choose the first non-null image source
+            imgsrc = thumbnail_src if thumbnail_src != 'N/A' else (image_src if image_src != 'N/A' else ogimage_src)
+
+            extracted_results.append({
+                'htmlTitle': htmlTitle,
+                'link': link,
+                'displayLink': displayLink,
+                'htmlSnippet': htmlSnippet,
+                'imgsrc': imgsrc,  # Store the chosen image source as 'imgsrc'
+            })
+
+        # Filter out results where 'imgsrc' is 'N/A'
+        filtered_results = [result for result in extracted_results if result['imgsrc'] != 'N/A']
+
+        mydict = {
+            'input': searchkey,
+            'extracted_results': filtered_results,
+        }
+
+        return render(request, 'main.html', mydict)
+    finally:
+        response.close() 

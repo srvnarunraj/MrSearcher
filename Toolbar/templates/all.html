@@ -9,15 +9,52 @@
     <title>Mr Search</title>
 </head>
 <body>
-    <section class="text-gray-600 body-font">
-        <div>
-            <br>
+    <section class="text-gray-400 bg-gray-900 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap" style="padding-top: 1rem;">
+          <div class="flex flex-col flex-wrap lg:py-6 -mb-10 lg:w-1/2 lg:pl-12 lg:text-left text-center">
+                {% comment %} S1 Starts {% endcomment %}
+                {% for result in extracted_results %}
+                <div class="container px-5 py-4 mx-auto">
+                    <div class="flex items-left lg:w-5/5 mx-auto border-b pb-10 mb-5 border-gray-800 sm:flex-row flex-col">
+                        <div class="sm:w-32 sm:h-32 h-20 w-20 sm:mr-10 inline-flex items-center justify-center rounded-full text-indigo-400 bg-gray-800 flex-shrink-0">
+                            <img src="{{ result.imgsrc|safe }}" alt="" srcset="">
+                        </div>
+                        <div class="flex-grow sm:text-left text-center mt-6 sm:mt-0">
+                            <h2 class="text-white text-lg title-font font-medium mb-2">{{ result.htmlTitle|safe }}</</h2>
+                            <p class="mt-3 text-indigo-400 ">
+                                <a href="{{ result.link|safe }}">{{ result.displayLink|safe }}</a></p>
+                            <p class="leading-relaxed text-base">{{ result.htmlSnippet|safe }}.</p>
+                            <a href="{{ result.link|safe }}"class="mt-3 text-indigo-400 inline-flex items-center">Learn More
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% comment %} s1 ends {% endcomment %}
         </div>
-        <div class="container px-10 py-30 mx-auto">
-            <div class="flex flex-wrap -m-4">
-                All Content Goes here
+          <div class="p-4 lg:w-1/2 md:w-full" style="margin-left: 0px;padding-left: 10rem;">
+            <div class="flex border-2 rounded-lg border-gray-800 p-8 sm:flex-row flex-col">
+              <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-gray-800 text-indigo-400 flex-shrink-0">
+                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="flex-grow">
+                <h2 class="text-white text-lg title-font font-medium mb-3">The Catalyzer</h2>
+                <p class="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine.</p>
+                <a class="mt-3 text-indigo-400 inline-flex items-center">Learn More
+                  <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
             </div>
-         </div> 
-</section> 
+        </div>
+        </div>
+      </section>
 </body>
 </html>
