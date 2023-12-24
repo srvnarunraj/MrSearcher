@@ -7,4 +7,5 @@ urlpatterns = [
     path('images',views.images),
     path('books',views.books),
     path('all',views.all),
+    path('getGeminiAnswers',views.getGeminiAnswers,name="getGeminiAnswers"),
 ]

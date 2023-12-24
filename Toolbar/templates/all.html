@@ -6,6 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style> 
+    #typing-text {
+        position: relative;
+    }
+
+    .loading-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
     <title>Mr Search</title>
 </head>
 <body>
@@ -37,16 +61,13 @@
         </div>
           <div class="p-4 lg:w-1/2 md:w-full" style="margin-left: 0px;padding-left: 10rem;">
             <div class="flex border-2 rounded-lg border-gray-800 p-8 sm:flex-row flex-col h-25vh">
-              <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-gray-800 text-indigo-400 flex-shrink-0">
-                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
+              <div class="sm:w-32 sm:h-32 h-20 w-20 sm:mr-10 inline-flex items-center justify-center rounded-full text-indigo-400 bg-gray-800 flex-shrink-0">
+                <img src="{% static "admin/img/AI_Logo.png" %}" alt="" srcset="">
               </div>
               <div class="flex-grow overflow-y-auto" style="max-height: 25vh; overflow-y: auto;">
                 <h2 class="text-white text-lg title-font font-medium mb-3">Mr AI</h2>
-                  <p class="leading-relaxed text-base">
-                    <span class="leading-relaxed text-base" id="typing-text">{{ ai }}</span>
+                  <p class="min-h-14 leading-relaxed text-base" style="min-height:14vh max-height: 25vh">
+                    <span class="leading-relaxed text-base" id="typing-text"></span>
                   </p>
                 </a>
               </div>
@@ -55,21 +76,52 @@
         </div>
       </section>
       <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          const typingText = document.getElementById('typing-text');
-          const textToType = typingText.textContent;
-          typingText.textContent = '';
-          let i = 0;
-          const typeInterval = setInterval(function () {
-            if (i < textToType.length) {
-              typingText.textContent += textToType.charAt(i);
-              i++;
-            } else {
-              clearInterval(typeInterval); 
+        $(document).ready(function() {
+            // Function to handle the typing effect
+            function typeText(text) {
+                $('#typing-text').empty();
+                let i = 0;
+                const typeInterval = setInterval(function () {
+                    if (i < text.length) {
+                        $('#typing-text').append(text.charAt(i));
+                        i++;
+                    } else {
+                        clearInterval(typeInterval);
+                        // After typing is complete, replace the content with the HTML
+                        var hiddenElement = $('<div style="display: none;"></div>');
+                        hiddenElement.html(text);
+                        $('#typing-text').html(hiddenElement.html());
+                    }
+                }, 10);
             }
-          }, 10);
+    
+            // Display a loading spinner while waiting for the AJAX response
+            $('#typing-text').html('<div class="loading-spinner"></div>');
+    
+            var customVariable = document.getElementById('uname').value;
+            console.log("customVariable is ", customVariable)
+    
+            $.ajax({
+                url: '{% url "getGeminiAnswers" %}',
+                data: { custom_data: customVariable },
+                success: function(data) {
+                    // Use the variable in the AJAX response
+                    // Display the actual result after loading
+                    var hiddenElement = $('<div style="display: none;"></div>');
+                hiddenElement.html(data.message);
+                
+                // Append the hidden element to the body to make it accessible by the typeText function
+                    $('body').append(hiddenElement);
+                    typeText(data.message);
+                },
+                error: function() {
+                    // Handle error if the AJAX request fails
+                    $('#typing-text').html('<p>Error loading data</p>');
+                }
+            });
         });
-      </script>
+    </script>
+    
       
 </body>
 </html>

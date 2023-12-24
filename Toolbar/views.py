@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect, render
 from youtubesearchpython import VideosSearch
 from Toolbar.models import SearchText 
@@ -7,6 +7,18 @@ import json
 import wikipediaapi
 from bs4 import BeautifulSoup
 import urllib.parse
+import google.generativeai as genai
+import markdown
+import time
+
+def getGeminiAnswers(request):
+    query = request.GET.get('custom_data', 'Default Message')
+    GOOGLE_API_KEY=""
+    genai.configure(api_key=GOOGLE_API_KEY)
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(query)
+    return  JsonResponse({'message':markdown.markdown(response.text)})
+
 def startup(request):
     return render(request,'index.html')
 
@@ -149,21 +161,10 @@ def all(request):
 
         # Filter out results where 'imgsrc' is 'N/A'
         filtered_results = [result for result in extracted_results]
-
-
-        ##### AI RESULTS
-        user_agent = "YourAppName/1.0 (your@email.com)"
-        custom_headers = {
-            'User-Agent': user_agent,
-        }
-        wiki_wiki = wikipediaapi.Wikipedia('en', headers=custom_headers)  # 'en' for English Wikipedia
-        page = wiki_wiki.page(searchkey)
         mydict = {
             'input': searchkey,
             'extracted_results': filtered_results,
-            'ai':page.summary
         }
-
         return render(request, 'main.html', mydict)
     finally:
         response.close()
