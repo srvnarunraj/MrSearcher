@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure--03ucd=x#h*c(qfif)i$b5u89w6+kdzcx9h8p*2ru=pkgci_*#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'srvnarunraj.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'srvnarunraj.pythonanywhere.com','srvnarunraj.azurewebsites.net']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://srvnarunraj.azurewebsites.net',
+    # Add any other trusted origins as needed.
+]
 
 
 # Application definition
