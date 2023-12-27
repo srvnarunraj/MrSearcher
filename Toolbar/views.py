@@ -11,9 +11,21 @@ import google.generativeai as genai
 import markdown
 import time
 
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
+
+keyVaultName = "MrSearchCreds"
+KVUri = f"https://{keyVaultName}.vault.azure.net"
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=KVUri, credential=credential)
+
+def getSecrets(key):
+    return client.get_secret(key).value
+
 def getGeminiAnswers(request):
     query = request.GET.get('custom_data', 'Default Message')
-    GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
+    # GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
+    GOOGLE_API_KEY=getSecrets('GOOGLE-API-KEY')
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content(query)
@@ -85,7 +97,8 @@ def books(request):
     stxt = SearchText.objects.all().last()
     searchtxt = str(stxt)
 
-    api_key = os.environ.get('BOOKS_API_KEY')
+    # api_key = os.environ.get('BOOKS_API_KEY')
+    api_key = getSecrets('GOOGLE-BOOKS-API-KEY')
     # Construct the API URL with the API key
     url = f'https://www.googleapis.com/books/v1/volumes?q={searchtxt}&key={api_key}'
 
@@ -112,8 +125,11 @@ def all(request):
     searchkey =  SearchText.objects.all().last()
     searchkey = str(searchkey)
 
-    API_KEY =os.getenv('API_KEY')
-    CX=os.getenv('CX')
+    # API_KEY =os.getenv('API_KEY')
+    API_KEY =getSecrets('GOOGLE-BOOKS-API-KEY')
+    # CX=os.getenv('CX')
+    CX=getSecrets('CX')
+    
     url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={searchkey}"
 
     response = requests.get(url)
